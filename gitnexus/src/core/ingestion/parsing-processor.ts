@@ -289,11 +289,7 @@ const processParsingSequential = async (
     // Skip very large files — they can crash tree-sitter or cause OOM
     if (file.content.length > 512 * 1024) continue;
 
-    try {
-      await loadLanguage(language, file.path);
-    } catch {
-      continue;  // parser unavailable — already warned in pipeline
-    }
+    if (!await loadLanguage(language, file.path)) continue;
 
     let tree;
     try {

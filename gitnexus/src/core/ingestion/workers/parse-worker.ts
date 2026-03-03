@@ -129,13 +129,14 @@ const languageMap: Record<string, any> = {
   ...(Swift ? { [SupportedLanguages.Swift]: Swift } : {}),
 };
 
-const setLanguage = (language: SupportedLanguages, filePath: string): void => {
+const setLanguage = (language: SupportedLanguages, filePath: string): boolean => {
   const key = language === SupportedLanguages.TypeScript && filePath.endsWith('.tsx')
     ? `${language}:tsx`
     : language;
   const lang = languageMap[key];
-  if (!lang) throw new Error(`Unsupported language: ${language}`);
+  if (!lang) return false;
   parser.setLanguage(lang);
+  return true;
 };
 
 // ============================================================================
@@ -589,21 +590,15 @@ const processBatch = (files: ParseWorkerInput[], onProgress?: (filesProcessed: n
 
     // Process regular files for this language
     if (regularFiles.length > 0) {
-      try {
-        setLanguage(language, regularFiles[0].path);
+      if (setLanguage(language, regularFiles[0].path)) {
         processFileGroup(regularFiles, language, queryString, result, onFileProcessed);
-      } catch {
-        // parser unavailable — skip this language group
       }
     }
 
     // Process tsx files separately (different grammar)
     if (tsxFiles.length > 0) {
-      try {
-        setLanguage(language, tsxFiles[0].path);
+      if (setLanguage(language, tsxFiles[0].path)) {
         processFileGroup(tsxFiles, language, queryString, result, onFileProcessed);
-      } catch {
-        // parser unavailable — skip this language group
       }
     }
   }

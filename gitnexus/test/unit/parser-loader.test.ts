@@ -19,69 +19,64 @@ describe('parser-loader', () => {
 
   describe('loadLanguage', () => {
     it('loads TypeScript language', async () => {
-      await expect(loadLanguage(SupportedLanguages.TypeScript)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.TypeScript)).toBe(true);
     });
 
     it('loads JavaScript language', async () => {
-      await expect(loadLanguage(SupportedLanguages.JavaScript)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.JavaScript)).toBe(true);
     });
 
     it('loads Python language', async () => {
-      await expect(loadLanguage(SupportedLanguages.Python)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.Python)).toBe(true);
     });
 
     it('loads Java language', async () => {
-      await expect(loadLanguage(SupportedLanguages.Java)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.Java)).toBe(true);
     });
 
     it('loads C language', async () => {
-      await expect(loadLanguage(SupportedLanguages.C)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.C)).toBe(true);
     });
 
     it('loads C++ language', async () => {
-      await expect(loadLanguage(SupportedLanguages.CPlusPlus)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.CPlusPlus)).toBe(true);
     });
 
     it('loads C# language', async () => {
-      await expect(loadLanguage(SupportedLanguages.CSharp)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.CSharp)).toBe(true);
     });
 
     it('loads Go language', async () => {
-      await expect(loadLanguage(SupportedLanguages.Go)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.Go)).toBe(true);
     });
 
     it('loads Rust language', async () => {
-      await expect(loadLanguage(SupportedLanguages.Rust)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.Rust)).toBe(true);
     });
 
     it('loads PHP language', async () => {
-      await expect(loadLanguage(SupportedLanguages.PHP)).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.PHP)).toBe(true);
     });
 
     it('loads TSX grammar for .tsx files', async () => {
-      // TSX uses a different grammar (TypeScript.tsx vs TypeScript.typescript)
-      await expect(loadLanguage(SupportedLanguages.TypeScript, 'Component.tsx')).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.TypeScript, 'Component.tsx')).toBe(true);
     });
 
     it('loads TS grammar for .ts files', async () => {
-      await expect(loadLanguage(SupportedLanguages.TypeScript, 'utils.ts')).resolves.not.toThrow();
+      expect(await loadLanguage(SupportedLanguages.TypeScript, 'utils.ts')).toBe(true);
     });
 
-    it('throws for unsupported language', async () => {
-      await expect(loadLanguage('ruby' as SupportedLanguages)).rejects.toThrow('Unsupported language');
+    it('returns false for unsupported language', async () => {
+      const result = await loadLanguage('ruby' as SupportedLanguages);
+      expect(result).toBe(false);
     });
   });
 
   describe('Swift optional dependency', () => {
     it('handles Swift loading gracefully', async () => {
-      // Swift is optional — it either loads successfully or throws an error about unsupported language
-      try {
-        await loadLanguage(SupportedLanguages.Swift);
-        // If it succeeds, tree-sitter-swift is installed
-      } catch (e: any) {
-        // If it fails, it should be because tree-sitter-swift is not installed
-        expect(e.message).toContain('Unsupported language');
-      }
+      const result = await loadLanguage(SupportedLanguages.Swift);
+      // Returns true if tree-sitter-swift is installed, false otherwise
+      expect(typeof result).toBe('boolean');
     });
   });
 });

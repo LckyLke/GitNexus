@@ -34,8 +34,8 @@ export const processHeritage = async (
     const queryStr = LANGUAGE_QUERIES[language];
     if (!queryStr) continue;
 
-    // 2. Load the language
-    await loadLanguage(language, file.path);
+    // 2. Load the language (skip if unavailable)
+    if (!await loadLanguage(language, file.path)) continue;
 
     // 3. Get AST
     let tree = astCache.get(file.path);

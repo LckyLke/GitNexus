@@ -45,7 +45,7 @@ export const loadParser = async (): Promise<Parser> => {
   return parser;
 };
 
-export const loadLanguage = async (language: SupportedLanguages, filePath?: string): Promise<void> => {
+export const loadLanguage = async (language: SupportedLanguages, filePath?: string): Promise<boolean> => {
   if (!parser) await loadParser();
   const key = language === SupportedLanguages.TypeScript && filePath?.endsWith('.tsx')
     ? `${language}:tsx`
@@ -53,7 +53,8 @@ export const loadLanguage = async (language: SupportedLanguages, filePath?: stri
 
   const lang = languageMap[key];
   if (!lang) {
-    throw new Error(`Unsupported language: ${language}`);
+    return false;
   }
   parser!.setLanguage(lang);
+  return true;
 };

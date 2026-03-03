@@ -131,7 +131,7 @@ export const processParsing = async (
 
     if (!language) continue;
 
-    await loadLanguage(language, file.path);
+    if (!await loadLanguage(language, file.path)) continue;
     
     // 3. Parse the text content into an AST
     const tree = parser.parse(file.content);

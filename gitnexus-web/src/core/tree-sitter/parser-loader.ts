@@ -46,29 +46,27 @@ const getWasmPath = (language: SupportedLanguages, filePath?: string): string =>
     return languageFileMap[language];
 };
 
-export const loadLanguage = async (language: SupportedLanguages, filePath?: string): Promise<void> => {
+export const loadLanguage = async (language: SupportedLanguages, filePath?: string): Promise<boolean> => {
     if (!parser) await loadParser();
     const wasmPath = getWasmPath(language, filePath);
     
     if (languageCache.has(wasmPath)) {
         parser!.setLanguage(languageCache.get(wasmPath)!);
-        return;
+        return true;
     }
 
     if (!wasmPath) {
-        console.error(`❌ [Parser] No WASM path configured for language: ${language}`);
-        throw new Error(`Unsupported language: ${language}`);
+        return false;
     }
     
     try {
         const loadedLanguage = await Parser.Language.load(wasmPath);    
         languageCache.set(wasmPath, loadedLanguage);
         parser!.setLanguage(loadedLanguage);
+        return true;
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error(`❌ [Parser] Failed to load WASM grammar for ${language}`);
-        console.error(`   WASM Path: ${wasmPath}`);
-        console.error(`   Error: ${errorMessage}`);
-        throw new Error(`Failed to load grammar for ${language}: ${errorMessage}`);
+        console.warn(`[Parser] Failed to load WASM grammar for ${language}: ${errorMessage}`);
+        return false;
     }
 }
